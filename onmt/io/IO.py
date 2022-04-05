@@ -347,7 +347,11 @@ def _peek(seq):
         and an iterator created by re-chaining that value to the beginning
         of the iterator.
     """
-    first = next(seq)
+    try:
+        first = next(seq)
+    except StopIteration:
+        return None
+
     return first, chain([first], seq)
 
 

@@ -78,7 +78,7 @@ def attack(all_word_embedding, label_onehot, translator, src, batch, new_embeddi
                     mask = None
                     placeholder = label_onehot[iter_ind].clone()
                     fake_onehot = placeholder.expand_as(output_a)
-                    real, reali = torch.max (torch.mul(output_a, fake_onehot),1)
+                    real, reali = torch.max(torch.mul(output_a, fake_onehot),1)
                     other, otheri = torch.max(torch.mul(output_a, (1-fake_onehot)) - fake_onehot*10000, 1)
                     t_loss, t_pos = torch.min(torch.clamp(other-real, min=0),0)
                     if t_loss.data[0] < 0:
@@ -163,11 +163,11 @@ def main():
     opt.cuda = opt.gpu > -1
     if opt.cuda:
         torch.cuda.set_device(opt.gpu)
-    #print(opt)
+    print(opt)
     # Load the model.
     fields, model, model_opt = \
         onmt.ModelConstructor.load_test_model(opt, dummy_opt.__dict__)
-    #print(model_opt)
+    print(model_opt)
     n_src = len(fields['src'].vocab) 
     n_tgt = len(fields['tgt'].vocab)
     # File to write sentences to.
@@ -256,10 +256,10 @@ def main():
         if TARGETED:
             label_onehot = label_onehot[1:-1,:]
         label_onehot = Variable(label_onehot, requires_grad = False).cuda()
-        #print(label_onehot)
-        #print(batch)
+        print(label_onehot)
+        print(batch)
         input_embedding, src= translator.getEmbedding(batch)
-        #print(src)
+        print(src)
         hidden_size = input_embedding.size()[2]
         
         if GROUP_LASSO:
@@ -267,7 +267,7 @@ def main():
         else:
             modifier_initial = torch.zeros(input_embedding.size()).cuda()
         modifier = Variable(modifier_initial, requires_grad = True)
-        #print(input_embedding)
+        print(input_embedding)
         new_embedding = input_embedding.clone()
         modifier, output_a, attn, new_word, output_i, CFLAG = attack(all_word_embedding, label_onehot, translator, src, batch, new_embedding, input_embedding, modifier, const, GROUP_LASSO, TARGETED, GRAD_REG, NN)
         words_list = builder.get_word(output_i, attn, batch)
@@ -288,7 +288,7 @@ def main():
                 changed_words.append(np.argmin(dis))
             print(changed_words)
             new_word = changed_words
-        #print(new_word)
+        print(new_word)
         newsrc = src.clone()
         for i in range(input_embedding.size()[0]):
             newsrc.data[i][0] = new_word[i]
